@@ -1,0 +1,30 @@
+.dice-container{
+    display:flex;
+    justify-content:center;
+    /**gap:10pc;**/
+}
+
+.dice{
+    min-width:100px;
+}
+
+.dice>img{
+    display:block;
+    box-sizing:border-box;
+}
+
+.dice.locked{
+    border:5px solid red;
+}
+
+#wager-group{
+    display:flex;
+}
+
+#wager{
+    height:3em;
+}
+
+#balance-group{
+    display:flex;
+}

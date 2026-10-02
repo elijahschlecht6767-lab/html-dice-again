@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice</title>
+    <script src="js/dice.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Welcome</h1>
+    <h2>To High Low...</h2>
+
+    <div id="wager-group">
+        <h3>Wager: </h3>
+        <input id="wager" type="number">
+    </div>
+    <div class="container">
+        <div class="dice-container">
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <div class="dice"></div>
+            <h1 id="total-roll">>>>10</h1>
+            <br>
+        </div>
+    </div>
+ 
+    <div class="control-container">
+        <button id="rollB" onclick="rollDice()">ROLL</button>
+    </div>
+
+    <div id="balance-group">
+        <h2>Balance: $</h2>
+        <h2 id="balance" style="color: green;">22</h2><br/>
+    </div>
+    <h2>How to Play</h2>
+    <p>
+        Pick a wager from 11 to 59. <br/>
+        If you roll a number higher than or equal to your wager, you get as many points as you wagered.<br/>
+        If you roll a number lower than your wager, you lose as many points as you wagered.<br/>
+        Get 250 points or more to win.<br/>
+        Go into debt (the negatives or lower than 11) and you lose.<br/>
+        You start with $22.<br/>
+        Goodluck...
+    </p>
+    <h1 id="outcome"></h1>
+    <img id="outcome-img" width="500" src=" "/>
+ 
+    <script>
+        const outcomeImg=document.getElementById("outcome-img")
+
+        const totalRoll=document.getElementById("total-roll")
+
+        const outcome=document.getElementById("outcome")
+
+        const rollButton=document.getElementById("rollB");
+        rollButton.disabled=true;
+
+        const balanceAmount=document.getElementById("balance");
+        balance=Number(balanceAmount.innerHTML);
+
+        const inputBox=document.getElementById("wager");
+
+        let isFinished=false;
+
+        inputBox.addEventListener('input', () => {
+            //while(true){
+            if(!isFinished){
+                if(Number.isFinite(Number(inputBox.value))&&Number(inputBox.value)>10&&Number(inputBox.value)<60&&Number(inputBox.value)<=Number(balanceAmount.innerHTML)){
+                    rollButton.disabled=false;
+                }else{
+                    rollButton.disabled=true
+                }
+            }
+            //}
+        });
+
+        const diceContainers = document.querySelectorAll(".dice");
+        let dice = [];
+        diceContainers.forEach((container, idx)=>{
+            dice.push(new Dice(container));
+        });
+ 
+        async function rollDice(){
+            let rolls = [];
+            dice.forEach((d)=>{
+                rolls.push(d.roll({rollTime: 2000, speed: 30}));
+            });
+            await Promise.all(rolls); // hold execution until all rolls are resolved
+            console.log(calculateTotal());
+        }
+ 
+        function calculateTotal(){
+            let sum = dice.reduce((accumulator, element)=>{
+                return accumulator + element.value;
+            }, 0);
+            totalRoll.innerHTML=`>>>${sum}`
+            if(sum>=Number(inputBox.value)){
+                balance+=Number(inputBox.value);
+                outcome.style="color: lime;";
+                outcome.innerHTML=`Win! You got $${Number(inputBox.value)}`;
+            }else{
+                balance-=Number(inputBox.value);
+                outcome.style="color: orangered;";
+                outcome.innerHTML=`Loss! You lost $${Number(inputBox.value)}`;
+            }
+            if(balance>249){
+                isFinished=true;
+                rollButton.disabled=true;
+                outcome.innerHTML="You won! Congradulations in paying off your debt of $250, until next time."
+                outcome.style="color: lime";
+                outcomeImg.src="./media/win.gif";
+            }else if(balance<11){
+                isFinished=true;
+                rollButton.disabled=true;
+                outcome.innerHTML="You lost! You ran out of money, and with no time or other way to make up your debt of $250, the italian mob gave you concrete shoes, and made you sleep with the fishes..."
+                outcome.style="color: orangered";
+                outcomeImg.src="./media/lose.gif";
+            }
+            balanceAmount.innerHTML=balance;
+            return sum;
+        }
+    </script>
+</body>
+</html>
