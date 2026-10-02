@@ -6,7 +6,6 @@ class Dice{
         this.face=this.createFace(); //this will allow us acces to change the image
         this.value=1;
         this.locked=false;
-        this.addClickHandler();
     };
 
     get value(){
