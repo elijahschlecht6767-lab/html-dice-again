@@ -1,0 +1,5 @@
+- add 1250 or more to win
+- add feature to increase chances of player betting high
+- add new rules when player reaches 250
+- add new rules when player reaches 550
+- add new rules when player reaches 800

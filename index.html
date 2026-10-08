@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Welcome</h1>
-    <h2>To High Low...</h2>
+    <div id="starter">
+        <h1>Welcome</h1>
+        <h2>To High Low Lockout...</h2>
+    </div>
 
     <div id="wager-group">
         <h3>Wager: </h3>
@@ -40,25 +42,43 @@
         <h2>Balance: $</h2>
         <h2 id="balance" style="color: green;">22</h2><br/>
     </div>
-    <h2>How to Play</h2>
-    <p>
-        Pick a wager from 11 to 59. <br/>
-        If you roll a number higher than or equal to your wager, you get as many points as you wagered.<br/>
-        If you roll a number lower than your wager, you lose as many points as you wagered.<br/>
-        Get 250 points or more to win.<br/>
-        Go into debt (the negatives or lower than 11) and you lose.<br/>
-        You start with $22.<br/>
-        Goodluck...
-    </p>
+    <div id="instructions">
+        <h2>How to Play</h2>
+        <p>
+            You owe the Italian Mob $1250, and have very little time to pay it back... you have no other option to pay them back, other than play High Low Lockout at the Casino... you step up to the table, deciding its worth a try.<br/>
+            To start, pick a wager from 11 to 59 that doesn't exceed your balance. <br/>
+            If you roll a number higher than or equal to your wager, you get as much added to your balance as you wagered.<br/>
+            If you roll a number lower than your wager, you lose as much as you wagered.<br/>
+            Get $1250 or more to win.<br/>
+            Go into debt (the negatives or lower than 11) and you lose.<br/>
+            You start with $22, and a minimum bet of $11.<br/>
+            A lockout multiplier is a number that your wager is multiplied by, increasing your win/ loss of each bet, once a lockout multiplier is reached in the game you can only change it by reaching the next and increasing it.<br/>
+            Your lockout multiplier starts at 1X.<br/>
+            Betting 40 or higher and winning gives you double your wager after your lockout multiplier has been applied, losing will still only take your wager with the current lockout multiplier.<br/>
+            Once you reach $250 for the first time, your minimum bet increases to $30, and a lockout multiplier of 2X is applied.<br/>
+            Once you reach $550 for the first time, your minimum bet increases to $35, and a lockout multiplier of 3X is applied.<br/>
+            Once you reach $800 for the first time, a lockout multiplier of 5X is applied for the remainder of the game.<br/>
+            Goodluck...
+        </p>
+    </div>
     <h1 id="outcome"></h1>
-    <img id="outcome-img" width="500" src=" "/>
+    <h1 id="lockout-fac" style="color: goldenrod">Lockout Multiplier: 1X</h1>
+    <h1 id="min-bet" style="color: goldenrod">Minimum Bet: $11</h1>
+    <div class="advertisements">
+        <a href="./fake-website1.html">
+            <img id="ad1" width="365" height="1000" src="./media/ad1.png"/>
+        </a>
+        <a href="./fake-website2.html">
+            <img id="ad2" width="365" height="1000" src="./media/ad2.png"/>
+        </a>
+    </div>
  
     <script>
-        const outcomeImg=document.getElementById("outcome-img")
+        const totalRoll=document.getElementById("total-roll");
 
-        const totalRoll=document.getElementById("total-roll")
-
-        const outcome=document.getElementById("outcome")
+        const outcome=document.getElementById("outcome");
+        const lockoutDis=document.getElementById("lockout-fac");
+        const minBetDis=document.getElementById("min-bet");
 
         const rollButton=document.getElementById("rollB");
         rollButton.disabled=true;
@@ -70,13 +90,16 @@
 
         let isFinished=false;
 
+        let minBet=11;
+        let lockoutMul=1;
+
         inputBox.addEventListener('input', () => {
             //while(true){
             if(!isFinished){
-                if(Number.isFinite(Number(inputBox.value))&&Number(inputBox.value)>10&&Number(inputBox.value)<60&&Number(inputBox.value)<=Number(balanceAmount.innerHTML)){
+                if(Number.isFinite(Number(inputBox.value))&&Number(inputBox.value)>=minBet&&Number(inputBox.value)<60&&Number(inputBox.value)<=Number(balanceAmount.innerHTML)){
                     rollButton.disabled=false;
                 }else{
-                    rollButton.disabled=true
+                    rollButton.disabled=true;
                 }
             }
             //}
@@ -89,12 +112,16 @@
         });
  
         async function rollDice(){
+            rollButton.disabled=true;
             let rolls = [];
             dice.forEach((d)=>{
                 rolls.push(d.roll({rollTime: 2000, speed: 30}));
             });
             await Promise.all(rolls); // hold execution until all rolls are resolved
             console.log(calculateTotal());
+            if(Number.isFinite(Number(inputBox.value))&&Number(inputBox.value)>=minBet&&Number(inputBox.value)<60&&Number(inputBox.value)<=Number(balanceAmount.innerHTML)){
+                rollButton.disabled=false;
+            } //LEFT OF HERE ADDING THE ROLL BUTTON STUFF FOR WHILE ALREADY ROLLING
         }
  
         function calculateTotal(){
@@ -103,28 +130,48 @@
             }, 0);
             totalRoll.innerHTML=`>>>${sum}`
             if(sum>=Number(inputBox.value)){
-                balance+=Number(inputBox.value);
+                if(Number(inputBox.value)>=40){
+                    balance+=(Number(inputBox.value)*lockoutMul)*2;
+                }else{
+                    balance+=Number(inputBox.value)*lockoutMul;
+                }
                 outcome.style="color: lime;";
-                outcome.innerHTML=`Win! You got $${Number(inputBox.value)}`;
+                if(Number(inputBox.value)>=40){
+                    outcome.innerHTML=`Win! You got $${(Number(inputBox.value)*lockoutMul)*2}`;
+                }else{
+                    outcome.innerHTML=`Win! You got $${Number(inputBox.value)*lockoutMul}`;
+                }
+                balanceAmount.innerHTML=balance;
             }else{
-                balance-=Number(inputBox.value);
+                balance-=Number(inputBox.value)*lockoutMul;
                 outcome.style="color: orangered;";
-                outcome.innerHTML=`Loss! You lost $${Number(inputBox.value)}`;
+                outcome.innerHTML=`Loss! You lost $${Number(inputBox.value)*lockoutMul}`;
+                balanceAmount.innerHTML=balance;
             }
-            if(balance>249){
+            if(lockoutMul==1&&balance>249){
+                minBet=30;
+                lockoutMul=2;
+            }else if(lockoutMul==2&&balance>549){
+                minBet=35;
+                lockoutMul=3;
+            }else if(lockoutMul==3&&balance>799){
+                lockoutMul=5;
+            }
+            if(balance>1249){
                 isFinished=true;
                 rollButton.disabled=true;
                 outcome.innerHTML="You won! Congradulations in paying off your debt of $250, until next time."
                 outcome.style="color: lime";
                 outcomeImg.src="./media/win.gif";
-            }else if(balance<11){
+            }else if(balance<minBet){
                 isFinished=true;
                 rollButton.disabled=true;
                 outcome.innerHTML="You lost! You ran out of money, and with no time or other way to make up your debt of $250, the italian mob gave you concrete shoes, and made you sleep with the fishes..."
                 outcome.style="color: orangered";
                 outcomeImg.src="./media/lose.gif";
             }
-            balanceAmount.innerHTML=balance;
+            lockoutDis.innerHTML=`Lockout Multiplier: ${lockoutMul}X`;
+            minBetDis.innerHTML=`Minimum Bet: $${minBet}`;
             return sum;
         }
     </script>

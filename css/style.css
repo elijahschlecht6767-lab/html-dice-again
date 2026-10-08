@@ -1,30 +1,72 @@
+body :not(.control-container):not(#wager-group){
+    text-align: center;
+}
+html{
+    transform: scale(0.70);
+    transform-origin: top center;
+    background-color: black;
+    color:white;
+}
+
+.advertisements{
+    #ad1 {
+        position: fixed;
+        top: 20px;
+        left: -356px;
+    }
+
+    #ad2 {
+        position: fixed;
+        top: 20px;
+        right: -356px;
+    }
+}
+/*.advertisements {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}*/
 .dice-container{
     display:flex;
     justify-content:center;
-    /**gap:10pc;**/
+    /*gap:10pc;*/
+    border: 8px solid white;
+    border-color:goldenrod;
+    padding: 1em;
 }
-
 .dice{
     min-width:100px;
 }
-
 .dice>img{
-    display:block;
+    display:block; /*black white*/
     box-sizing:border-box;
 }
-
 .dice.locked{
     border:5px solid red;
 }
 
-#wager-group{
-    display:flex;
-}
 
+#wager-group{
+    /* display:flex; */
+    border: 5px solid white;
+    display: inline-block;
+    padding: 1em;
+    margin-bottom: 1em;
+    #wager{
+        border: 3px solid white;
+        border-color:goldenrod;
+    }
+}
+#wager-group > h3{
+    display: inline;
+}
+#instructions{
+    border: 5px solid white; /** #####-LEFT OFF HERE-##### **/
+    border-radius: 15px;
+}
 #wager{
     height:3em;
 }
-
 #balance-group{
     display:flex;
 }
